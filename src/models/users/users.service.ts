@@ -18,10 +18,10 @@ export class UsersService {
         );
     }
 
-    findOne(id: string): User {
-        const user = this.users.find((user) => user.id === id);
+    findOne(upn: string): User {
+        const user = this.users.find((user) => user.upn === upn);
         if (!user) {
-            throw new NotFoundException(`User with ID ${id} not found`);
+            throw new NotFoundException(`User with UPN ${upn} not found`);
         }
         return user;
     }
@@ -35,16 +35,16 @@ export class UsersService {
         return newUser;
     }
 
-    update(id: string, updateUser: Partial<User>): User {
-        const user = this.findOne(id);
+    update(upn: string, updateUser: Partial<User>): User {
+        const user = this.findOne(upn);
         Object.assign(user, updateUser);
         return user;
     }
 
-    delete(id: string): void {
-        const index = this.users.findIndex((user) => user.id === id);
+    delete(upn: string): void {
+        const index = this.users.findIndex((user) => user.upn === upn);
         if (index === -1) {
-            throw new NotFoundException(`User with ID ${id} not found`);
+            throw new NotFoundException(`User with UPN ${upn} not found`);
         }
         this.users.splice(index, 1);
     }

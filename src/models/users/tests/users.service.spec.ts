@@ -41,18 +41,18 @@ describe('UsersService', () => {
 
     describe('Find Single User', () => {
         it('should throw an error when trying to retrieve a user from zero users', () => {
-            const idParam = uuidv4();
-            expect(() => service.findOne(idParam)).toThrow(
-                `User with ID ${idParam} not found`
+            const upnParam = 'unknownuser';
+            expect(() => service.findOne(upnParam)).toThrow(
+                `User with UPN ${upnParam} not found`
             );
         });
 
         it('should return a specific user from one user', () => {
-            const retId = service.create(mockUsers[0]).id;
-            expect(isUUID(retId)).toBe(true);
+            const retUpn = service.create(mockUsers[0]).upn;
+            expect(retUpn).toMatch(mockUsers[0].upn);
 
-            const retUser = service.findOne(retId);
-            expect(retId).toMatch(retUser.id);
+            const retUser = service.findOne(retUpn);
+            expect(retUpn).toMatch(retUser.upn);
             expect(retUser).toMatchObject(mockUsers[0]);
         });
     });
@@ -63,6 +63,7 @@ describe('UsersService', () => {
 
             expect(ret.id).toBeDefined();
             expect(isUUID(ret.id)).toBe(true);
+
             expect(ret).toMatchObject(mockUsers[0]);
         });
 
@@ -72,6 +73,7 @@ describe('UsersService', () => {
 
                 expect(ret.id).toBeDefined();
                 expect(isUUID(ret.id)).toBe(true);
+
                 expect(ret).toMatchObject(req);
             });
         });

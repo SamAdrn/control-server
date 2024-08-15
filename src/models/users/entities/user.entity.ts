@@ -7,6 +7,9 @@ export class User {
     @IsNotEmpty()
     name: string;
 
+    @IsNotEmpty()
+    upn: string;
+
     @IsEmail()
     email: string;
 }

@@ -21,9 +21,9 @@ export class UsersController {
         return this.usersService.findAll(query);
     }
 
-    @Get(':id')
-    findOne(@Param('id') id: string): User {
-        return this.usersService.findOne(id);
+    @Get(':upn')
+    findOne(@Param('upn') upn: string): User {
+        return this.usersService.findOne(upn);
     }
 
     @Post()
@@ -31,13 +31,13 @@ export class UsersController {
         return this.usersService.create(user);
     }
 
-    @Put(':id')
-    update(@Param('id') id: string, @Body() updateUser: Partial<User>): User {
-        return this.usersService.update(id, updateUser);
+    @Put(':upn')
+    update(@Param('upn') upn: string, @Body() updateUser: Partial<User>): User {
+        return this.usersService.update(upn, updateUser);
     }
 
-    @Delete(':id')
-    delete(@Param('id') id: string): void {
-        return this.usersService.delete(id);
+    @Delete(':upn')
+    delete(@Param('upn') upn: string): void {
+        return this.usersService.delete(upn);
     }
 }

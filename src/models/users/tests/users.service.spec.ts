@@ -34,7 +34,7 @@ describe('UsersService', () => {
         expect(service).toBeDefined();
     });
 
-    describe(`Find Users`, () => {
+    describe('Find Users', () => {
         it('should return an empty array initially', () => {
             expect(service.findAll()).toEqual([]);
         });

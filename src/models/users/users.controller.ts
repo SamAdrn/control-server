@@ -8,36 +8,40 @@ import {
     Body,
     Query,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+    constructor(private readonly dataService: UsersService) {}
 
     @Get()
     findAll(@Query() query: Partial<User>): User[] {
-        return this.usersService.findAll(query);
+        return this.dataService.findAll(query);
     }
 
     @Get(':upn')
-    findOne(@Param('upn') upn: string): User {
-        return this.usersService.findOne(upn);
+    findOne(@Param('upn') keyValue: string): User {
+        return this.dataService.findOne(keyValue);
     }
 
     @Post()
-    create(@Body() user: CreateUserDto): User {
-        return this.usersService.create(user);
+    create(@Body() createItem: CreateUserDto): User {
+        return this.dataService.create(createItem);
     }
 
     @Put(':upn')
-    update(@Param('upn') upn: string, @Body() updateUser: Partial<User>): User {
-        return this.usersService.update(upn, updateUser);
+    update(
+        @Param('upn') keyValue: string,
+        @Body() updateItem: Partial<User>
+    ): User {
+        return this.dataService.update(keyValue, updateItem);
     }
 
     @Delete(':upn')
-    delete(@Param('upn') upn: string): void {
-        return this.usersService.delete(upn);
+    delete(@Param('upn') keyValue: string): void {
+        return this.dataService.delete(keyValue);
     }
 }

@@ -2,10 +2,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { v4 as uuidv4, validate as isUUID } from 'uuid';
 
 import { mockUsers } from './users-mock.data';
+import { UserMetadata } from '../user.metadata';
 import { UsersService } from '../users.service';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { Metadata } from 'src/shared/interfaces/metadata.interface';
+import { sortObjects } from 'src/shared/utils/sortObjects.util';
 
 describe('UsersService', () => {
     let service: UsersService;
+    let metadata: Metadata;
+    let mockData: CreateUserDto[];
+
+    beforeAll(() => {
+        metadata = UserMetadata;
+        mockData = sortObjects(mockUsers, metadata.sortBy);
+    });
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -23,7 +34,7 @@ describe('UsersService', () => {
         expect(service).toBeDefined();
     });
 
-    describe('Find Users', () => {
+    describe(`Find Users`, () => {
         it('should return an empty array initially', () => {
             expect(service.findAll()).toEqual([]);
         });
@@ -40,20 +51,29 @@ describe('UsersService', () => {
     });
 
     describe('Find Single User', () => {
+        it('should return a specific user from one user', () => {
+            const retKeyName = service.create(mockUsers[0]).upn;
+            expect(retKeyName).toMatch(mockUsers[0].upn);
+
+            const retItem = service.findOne(retKeyName);
+            expect(retKeyName).toMatch(retItem[metadata.keyName]);
+            expect(retItem).toMatchObject(mockUsers[0]);
+        });
+
         it('should throw an error when trying to retrieve a user from zero users', () => {
-            const upnParam = 'unknownuser';
-            expect(() => service.findOne(upnParam)).toThrow(
-                `User with UPN ${upnParam} not found`
+            const keyParam = 'unknownuser';
+            expect(() => service.findOne(keyParam)).toThrow(
+                `User with ${metadata.keyName} ${keyParam} not found`
             );
         });
 
-        it('should return a specific user from one user', () => {
-            const retUpn = service.create(mockUsers[0]).upn;
-            expect(retUpn).toMatch(mockUsers[0].upn);
+        it('should throw an error when trying to retrieve a user with unknown upn', () => {
+            service.create(mockUsers[0]);
 
-            const retUser = service.findOne(retUpn);
-            expect(retUpn).toMatch(retUser.upn);
-            expect(retUser).toMatchObject(mockUsers[0]);
+            const keyParam = 'unknownuser';
+            expect(() => service.findOne(keyParam)).toThrow(
+                `User with ${metadata.keyName} ${keyParam} not found`
+            );
         });
     });
 

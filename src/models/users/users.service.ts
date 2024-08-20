@@ -1,11 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+    ConflictException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserMetadata } from './user.metadata';
 import { Metadata } from 'src/shared/interfaces/metadata.interface';
-import { sortObjects } from 'src/shared/utils/sortObjects.util';
+import { sortObjects } from 'src/shared/utils/sort.util';
+import { ERROR_MESSAGES, writeError } from 'src/shared/utils/error.util';
 
 @Injectable()
 export class UsersService {
@@ -33,26 +38,39 @@ export class UsersService {
         );
         if (!item) {
             throw new NotFoundException(
-                `${this.metadata.label} with ${this.metadata.keyName} ${keyValue} not found`
+                writeError(this.metadata, ERROR_MESSAGES.NOT_FOUND, keyValue)
             );
         }
         return item;
     }
 
     create(createItem: CreateUserDto): User {
-        const newItem: User = {
-            id: uuidv4(), // Generate UUID here
-            ...createItem,
-        };
-        this.data.push(newItem);
-        return newItem;
+        try {
+            this.findOne(createItem[this.metadata.keyName]);
+            // if findOne doesn't throw, the item exists, so throw ConflictException
+            throw new ConflictException(
+                writeError(
+                    this.metadata,
+                    ERROR_MESSAGES.EXISTS,
+                    createItem[this.metadata.keyName]
+                )
+            );
+        } catch (err) {
+            if (err instanceof NotFoundException) {
+                // item not found, safe to create a new one
+                const newItem: User = { id: uuidv4(), ...createItem };
+                this.data.push(newItem);
+                return newItem;
+            }
+            throw err;
+        }
     }
 
     update(keyValue: string, updateItem: Partial<CreateUserDto>): User {
         const item = this.findOne(keyValue);
         if (!item) {
             throw new NotFoundException(
-                `${this.metadata.label} with ${this.metadata.keyName} ${keyValue} not found`
+                writeError(this.metadata, ERROR_MESSAGES.NOT_FOUND, keyValue)
             );
         }
         Object.assign(item, updateItem);
@@ -63,7 +81,7 @@ export class UsersService {
         const index = this.data.findIndex((item) => item.upn === keyValue);
         if (index === -1) {
             throw new NotFoundException(
-                `${this.metadata.label} with ${this.metadata.keyName} ${keyValue} not found`
+                writeError(this.metadata, ERROR_MESSAGES.NOT_FOUND, keyValue)
             );
         }
         this.data.splice(index, 1);

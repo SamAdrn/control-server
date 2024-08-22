@@ -1,3 +1,6 @@
+/**
+ * Represents the metadata information an object needs
+ */
 export interface Metadata {
     name: string;
     namePlural: string;

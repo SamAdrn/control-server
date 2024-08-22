@@ -15,7 +15,7 @@ export class User {
 
     updatedDate: string; // Immutable, backend-generated
 
-    upn: string; // Immutable, required, postable
+    upn: string; // Immutable, postable, required
 
     firstName: string; // Mutable, postable, required
 

@@ -7,6 +7,20 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
+/**
+ * Catches all exceptions thrown by the server and generates a more structured
+ * error response with additional debugging details. An example error response:
+ *
+ * ```
+ * {
+ *      success: false,
+ *      statusCode: 500,
+ *      message: 'internal server error'
+ *      timestamp: '2024-08-22T03:22:46.943Z',
+ *      path: '/users/view/jondoe',
+ * }
+ * ```
+ */
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
     catch(exception: any, host: ArgumentsHost) {

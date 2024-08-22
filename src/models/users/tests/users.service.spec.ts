@@ -106,6 +106,17 @@ describe('UsersService', () => {
             });
         });
 
+        it('should correctly set createdDate and updatedDate when a new user is created', () => {
+            const ret = service.create(mockData[0]);
+
+            expect(ret.createdDate).toBeDefined();
+            expect(ret.updatedDate).toBeDefined();
+            expect(ret.createdDate).toBe(ret.updatedDate);
+
+            expect(() => new Date(ret.createdDate).toISOString()).not.toThrow();
+            expect(() => new Date(ret.updatedDate).toISOString()).not.toThrow();
+        });
+
         it('should throw an error when creating a user with a key value that already exists', () => {
             service.create(mockData[0]);
             expect(() => service.create(mockData[0])).toThrow(

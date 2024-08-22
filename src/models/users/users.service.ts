@@ -87,7 +87,9 @@ export class UsersService {
     }
 
     delete(keyValue: string): void {
-        const index = this.data.findIndex((item) => item.upn === keyValue);
+        const index = this.data.findIndex(
+            (item) => item[this.metadata.keyName] === keyValue
+        );
         if (index === -1) {
             throw new NotFoundException(
                 writeError(this.metadata, ERROR_MESSAGES.NOT_FOUND, keyValue)

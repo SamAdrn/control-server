@@ -1,10 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { v4 as uuidv4, validate as isUUID } from 'uuid';
 
 import { mockUsers } from './users-mock.data';
-import { UserMetadata } from '../user.metadata';
 import { UsersService } from '../users.service';
-import { CreateUserDto } from '../dto/create-user.dto';
+import { ViewUserDto } from '../entities/user.entity';
+import { UserMetadata } from '../../../shared/metadata/user.metadata';
 import { sortObjects } from 'src/shared/utils/sort.util';
 import { ERROR_MESSAGES, writeError } from 'src/shared/utils/error.util';
 
@@ -12,7 +11,7 @@ describe('UsersService', () => {
     let service: UsersService;
 
     const metadata = UserMetadata;
-    const mockData: CreateUserDto[] = sortObjects(mockUsers, metadata.sortBy);
+    const mockData: ViewUserDto[] = sortObjects(mockUsers, metadata.sortBy);
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -79,7 +78,7 @@ describe('UsersService', () => {
         });
 
         it('should return users matching the filter criteria', () => {
-            const filter = { name: mockUsers[0].name };
+            const filter = { lastName: mockUsers[0].lastName };
             const filteredUsers = service.findAll(filter);
 
             expect(filteredUsers.length).toBe(1);
@@ -97,20 +96,12 @@ describe('UsersService', () => {
     describe('Create User', () => {
         it('should create and return a new user', () => {
             const ret = service.create(mockData[0]);
-
-            expect(ret.id).toBeDefined();
-            expect(isUUID(ret.id)).toBe(true);
-
             expect(ret).toMatchObject(mockData[0]);
         });
 
         it('should create multiple users one-by-one', () => {
             mockData.forEach((req) => {
                 const ret = service.create(req);
-
-                expect(ret.id).toBeDefined();
-                expect(isUUID(ret.id)).toBe(true);
-
                 expect(ret).toMatchObject(req);
             });
         });
@@ -130,19 +121,19 @@ describe('UsersService', () => {
     describe('Update User', () => {
         it('should update and return the updated user', () => {
             const originalItem = service.create(mockData[0]);
-            const updateData = { name: 'Updated Name' };
+            const updateData = { firstName: 'Updated Name' };
 
             const updatedUser = service.update(
                 originalItem[metadata.keyName],
                 updateData
             );
 
-            expect(updatedUser.name).toBe(updateData.name);
+            expect(updatedUser.firstName).toBe(updateData.firstName);
             expect(updatedUser.email).toBe(originalItem.email); // unchanged
         });
 
         it('should throw an error when trying to update a non-existent user', () => {
-            const updateData = { name: 'Non-existent Item' };
+            const updateData = { firstName: 'Non-existent Item' };
             const keyParam = 'unknownuser';
 
             expect(() => service.update(keyParam, updateData)).toThrow(

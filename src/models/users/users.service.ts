@@ -52,7 +52,7 @@ export class UsersService {
     create(createItem: CreateUserDto): ViewUserDto {
         try {
             this.findOne(createItem[this.metadata.keyName]);
-            // if findOne doesn't throw, the item exists, so throw ConflictException
+            // if findOne doesn't throw, item exists, so throw ConflictException
             throw new ConflictException(
                 writeError(
                     this.metadata,

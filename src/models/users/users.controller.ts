@@ -9,8 +9,11 @@ import {
     Query,
 } from '@nestjs/common';
 
-import { User } from './entities/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
+import {
+    CreateUserDto,
+    UpdateUserDto,
+    ViewUserDto,
+} from './entities/user.entity';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -18,25 +21,25 @@ export class UsersController {
     constructor(private readonly dataService: UsersService) {}
 
     @Get()
-    findAll(@Query() query: Partial<User>): User[] {
+    findAll(@Query() query: Partial<ViewUserDto>): ViewUserDto[] {
         return this.dataService.findAll(query);
     }
 
     @Get(':upn')
-    findOne(@Param('upn') keyValue: string): User {
+    findOne(@Param('upn') keyValue: string): ViewUserDto {
         return this.dataService.findOne(keyValue);
     }
 
     @Post()
-    create(@Body() createItem: CreateUserDto): User {
+    create(@Body() createItem: CreateUserDto): ViewUserDto {
         return this.dataService.create(createItem);
     }
 
     @Put(':upn')
     update(
         @Param('upn') keyValue: string,
-        @Body() updateItem: Partial<User>
-    ): User {
+        @Body() updateItem: UpdateUserDto
+    ): ViewUserDto {
         return this.dataService.update(keyValue, updateItem);
     }
 

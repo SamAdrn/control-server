@@ -5,12 +5,17 @@ import {
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
-import { User } from './entities/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UserMetadata } from './user.metadata';
+import {
+    CreateUserDto,
+    ViewUserDto,
+    UpdateUserDto,
+    User,
+} from './entities/user.entity';
+import { UserMetadata } from '../../shared/metadata/user.metadata';
 import { Metadata } from 'src/shared/interfaces/metadata.interface';
-import { sortObjects } from 'src/shared/utils/sort.util';
 import { ERROR_MESSAGES, writeError } from 'src/shared/utils/error.util';
+import { generateISODate } from 'src/shared/utils/generate.util';
+import { sortObjects } from 'src/shared/utils/sort.util';
 
 @Injectable()
 export class UsersService {
@@ -22,7 +27,7 @@ export class UsersService {
         this.metadata = UserMetadata;
     }
 
-    findAll(filter?: Partial<User>): User[] {
+    findAll(filter?: Partial<ViewUserDto>): ViewUserDto[] {
         const items = sortObjects(this.data, this.metadata.sortBy);
         if (filter) {
             return items.filter((item) =>
@@ -32,7 +37,7 @@ export class UsersService {
         return items;
     }
 
-    findOne(keyValue: string): User {
+    findOne(keyValue: string): ViewUserDto {
         const item = this.data.find(
             (datum) => datum[this.metadata.keyName] === keyValue
         );
@@ -44,7 +49,7 @@ export class UsersService {
         return item;
     }
 
-    create(createItem: CreateUserDto): User {
+    create(createItem: CreateUserDto): ViewUserDto {
         try {
             this.findOne(createItem[this.metadata.keyName]);
             // if findOne doesn't throw, the item exists, so throw ConflictException
@@ -57,8 +62,12 @@ export class UsersService {
             );
         } catch (err) {
             if (err instanceof NotFoundException) {
-                // item not found, safe to create a new one
-                const newItem: User = { id: uuidv4(), ...createItem };
+                const newItem: User = {
+                    id: uuidv4(),
+                    ...createItem,
+                    createdDate: generateISODate(),
+                    updatedDate: generateISODate(),
+                };
                 this.data.push(newItem);
                 return newItem;
             }
@@ -66,7 +75,7 @@ export class UsersService {
         }
     }
 
-    update(keyValue: string, updateItem: Partial<CreateUserDto>): User {
+    update(keyValue: string, updateItem: UpdateUserDto): ViewUserDto {
         const item = this.findOne(keyValue);
         if (!item) {
             throw new NotFoundException(

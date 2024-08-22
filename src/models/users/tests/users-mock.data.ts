@@ -1,19 +1,29 @@
-import { CreateUserDto } from '../dto/create-user.dto';
+import { ViewUserDto } from '../entities/user.entity';
+import { generateISODate } from 'src/shared/utils/generate.util';
 
-export const mockUsers: CreateUserDto[] = [
+export const mockUsers: ViewUserDto[] = [
     {
-        name: 'Reza Rahadian',
+        firstName: 'Reza',
+        lastName: 'Rahadian',
         upn: 'rezarahadian',
         email: 'reza@rahadian.com',
+        createdDate: generateISODate(-2),
+        updatedDate: generateISODate(-1),
     },
     {
-        name: 'Dian Sastrowardoyo',
+        firstName: 'Dian',
+        lastName: 'Sastrowardoyo',
         upn: 'diansastro',
         email: 'dian@sastrowardoyo.com',
+        createdDate: generateISODate(-4),
+        updatedDate: generateISODate(-3),
     },
     {
-        name: 'Nicholas Saputra',
+        firstName: 'Nicholas',
+        lastName: 'Saputra',
         upn: 'nicosaputra',
         email: 'nicholas@saputra.com',
+        createdDate: generateISODate(-6),
+        updatedDate: generateISODate(-5),
     },
 ];

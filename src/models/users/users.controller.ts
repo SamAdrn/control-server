@@ -21,7 +21,7 @@ export class UsersController {
     constructor(private readonly dataService: UsersService) {}
 
     @Get()
-    findAll(@Query() query: Partial<ViewUserDto>): ViewUserDto[] {
+    findAll(@Query() query?: Partial<ViewUserDto>): ViewUserDto[] {
         return this.dataService.findAll(query);
     }
 

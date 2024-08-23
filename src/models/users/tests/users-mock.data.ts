@@ -1,6 +1,6 @@
 import { CreateUserDto } from '../entities/user.entity';
 
-export const mockUsers: CreateUserDto[] = [
+export const USER_MOCK_DATA: CreateUserDto[] = [
     {
         firstName: 'Reza',
         lastName: 'Rahadian',

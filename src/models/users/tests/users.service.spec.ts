@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { mockUsers } from './users-mock.data';
+import { USER_MOCK_DATA } from './users-mock.data';
 import { UsersService } from '../users.service';
 import { ViewUserDto } from '../entities/user.entity';
 import { UserMetadata } from '../../../shared/metadata/user.metadata';
@@ -11,7 +11,10 @@ describe('UsersService', () => {
     let service: UsersService;
 
     const metadata = UserMetadata;
-    const mockData: ViewUserDto[] = sortObjects(mockUsers, metadata.sortBy);
+    const mockData: ViewUserDto[] = sortObjects(
+        USER_MOCK_DATA,
+        metadata.sortBy
+    );
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -35,11 +38,11 @@ describe('UsersService', () => {
         });
 
         it('should return multiple users after creation', () => {
-            mockData.forEach((req) => {
-                service.create(req);
+            mockData.forEach((datum) => {
+                service.create(datum);
             });
-
             const retList = service.findAll();
+
             expect(retList.length).toBe(mockData.length);
             expect(retList).toMatchObject(mockData);
         });
@@ -56,7 +59,8 @@ describe('UsersService', () => {
         });
 
         it('should throw an error when trying to retrieve a user from zero users', () => {
-            const keyParam = 'unknownuser';
+            const keyParam = 'zero';
+
             expect(() => service.findOne(keyParam)).toThrow(
                 writeError(metadata, ERROR_MESSAGES.NOT_FOUND, keyParam)
             );
@@ -64,8 +68,8 @@ describe('UsersService', () => {
 
         it('should throw an error when trying to retrieve a user with unknown upn', () => {
             service.create(mockData[0]);
+            const keyParam = 'unknown';
 
-            const keyParam = 'unknownuser';
             expect(() => service.findOne(keyParam)).toThrow(
                 writeError(metadata, ERROR_MESSAGES.NOT_FOUND, keyParam)
             );
@@ -74,15 +78,15 @@ describe('UsersService', () => {
 
     describe('Find Users with Filters', () => {
         beforeEach(() => {
-            mockUsers.forEach((req) => service.create(req));
+            USER_MOCK_DATA.forEach((req) => service.create(req));
         });
 
         it('should return users matching the filter criteria', () => {
-            const filter = { lastName: mockUsers[0].lastName };
-            const filteredUsers = service.findAll(filter);
+            const filter = { lastName: USER_MOCK_DATA[0].lastName };
+            const filteredItems = service.findAll(filter);
 
-            expect(filteredUsers.length).toBe(1);
-            expect(filteredUsers[0]).toMatchObject(mockUsers[0]);
+            expect(filteredItems.length).toBe(1);
+            expect(filteredItems[0]).toMatchObject(USER_MOCK_DATA[0]);
         });
 
         it('should return an empty array if no users match the filter criteria', () => {
@@ -96,6 +100,7 @@ describe('UsersService', () => {
     describe('Create User', () => {
         it('should create and return a new user', () => {
             const ret = service.create(mockData[0]);
+
             expect(ret).toMatchObject(mockData[0]);
         });
 
@@ -119,6 +124,7 @@ describe('UsersService', () => {
 
         it('should throw an error when creating a user with a key value that already exists', () => {
             service.create(mockData[0]);
+
             expect(() => service.create(mockData[0])).toThrow(
                 writeError(
                     metadata,
@@ -155,10 +161,7 @@ describe('UsersService', () => {
 
     describe('Delete User', () => {
         it('should delete a user and return void', () => {
-            console.log(service.findAll());
-
             const retKeyName = service.create(mockData[0])[metadata.keyName];
-
             service.delete(retKeyName);
 
             expect(() => service.findOne(retKeyName)).toThrow(

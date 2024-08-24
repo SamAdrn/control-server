@@ -91,9 +91,9 @@ describe('UsersService', () => {
 
         it('should return an empty array if no users match the filter criteria', () => {
             const filter = { email: 'nonexistent@example.com' };
-            const filteredUsers = service.findAll(filter);
+            const filteredItems = service.findAll(filter);
 
-            expect(filteredUsers.length).toBe(0);
+            expect(filteredItems.length).toBe(0);
         });
     });
 
@@ -131,17 +131,20 @@ describe('UsersService', () => {
     });
 
     describe('Update User', () => {
+        beforeEach(() => {
+            USER_MOCK_DATA.forEach((req) => service.create(req));
+        });
+
         it('should update and return the updated user', () => {
-            const originalItem = service.create(mockData[0]);
             const updateData = { firstName: 'Updated Name' };
 
             const updatedUser = service.update(
-                originalItem[metadata.keyName],
+                mockData[0][metadata.keyName],
                 updateData
             );
 
             expect(updatedUser.firstName).toBe(updateData.firstName);
-            expect(updatedUser.email).toBe(originalItem.email); // unchanged
+            expect(updatedUser.email).toBe(mockData[0].email); // unchanged
         });
 
         it('should throw an error when trying to update a non-existent user', () => {
@@ -155,8 +158,12 @@ describe('UsersService', () => {
     });
 
     describe('Delete User', () => {
+        beforeEach(() => {
+            USER_MOCK_DATA.forEach((req) => service.create(req));
+        });
+
         it('should delete a user and return void', () => {
-            const retKeyName = service.create(mockData[0])[metadata.keyName];
+            const retKeyName = mockData[0][metadata.keyName];
             service.delete(retKeyName);
 
             expect(() => service.findOne(retKeyName)).toThrow(

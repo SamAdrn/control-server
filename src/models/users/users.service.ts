@@ -13,7 +13,7 @@ import {
 } from './entities/user.entity';
 import { UserMetadata } from '../../shared/metadata/user.metadata';
 import { Metadata } from 'src/shared/interfaces/metadata.interface';
-import { ERROR_MESSAGES, writeError } from 'src/shared/utils/error.util';
+import { ERROR } from 'src/shared/utils/error.util';
 import { generateISODate } from 'src/shared/utils/generate.util';
 import { sortObjects } from 'src/shared/utils/sort.util';
 
@@ -43,7 +43,7 @@ export class UsersService {
         );
         if (!item) {
             throw new NotFoundException(
-                writeError(this.metadata, ERROR_MESSAGES.NOT_FOUND, keyValue)
+                ERROR.NOT_FOUND(this.metadata, keyValue)
             );
         }
         return item;
@@ -54,11 +54,7 @@ export class UsersService {
             this.findOne(createItem[this.metadata.keyName]);
             // if findOne doesn't throw, item exists, so throw ConflictException
             throw new ConflictException(
-                writeError(
-                    this.metadata,
-                    ERROR_MESSAGES.EXISTS,
-                    createItem[this.metadata.keyName]
-                )
+                ERROR.EXISTS(this.metadata, createItem[this.metadata.keyName])
             );
         } catch (err) {
             if (err instanceof NotFoundException) {
@@ -79,7 +75,7 @@ export class UsersService {
         const item = this.findOne(keyValue);
         if (!item) {
             throw new NotFoundException(
-                writeError(this.metadata, ERROR_MESSAGES.NOT_FOUND, keyValue)
+                ERROR.NOT_FOUND(this.metadata, keyValue)
             );
         }
         Object.assign(item, updateItem);
@@ -92,7 +88,7 @@ export class UsersService {
         );
         if (index === -1) {
             throw new NotFoundException(
-                writeError(this.metadata, ERROR_MESSAGES.NOT_FOUND, keyValue)
+                ERROR.NOT_FOUND(this.metadata, keyValue)
             );
         }
         this.data.splice(index, 1);

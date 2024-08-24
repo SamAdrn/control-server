@@ -5,7 +5,7 @@ import { UsersService } from '../users.service';
 import { ViewUserDto } from '../entities/user.entity';
 import { UserMetadata } from '../../../shared/metadata/user.metadata';
 import { sortObjects } from 'src/shared/utils/sort.util';
-import { ERROR_MESSAGES, writeError } from 'src/shared/utils/error.util';
+import { ERROR } from 'src/shared/utils/error.util';
 
 describe('UsersService', () => {
     let service: UsersService;
@@ -62,7 +62,7 @@ describe('UsersService', () => {
             const keyParam = 'zero';
 
             expect(() => service.findOne(keyParam)).toThrow(
-                writeError(metadata, ERROR_MESSAGES.NOT_FOUND, keyParam)
+                ERROR.NOT_FOUND(metadata, keyParam)
             );
         });
 
@@ -71,7 +71,7 @@ describe('UsersService', () => {
             const keyParam = 'unknown';
 
             expect(() => service.findOne(keyParam)).toThrow(
-                writeError(metadata, ERROR_MESSAGES.NOT_FOUND, keyParam)
+                ERROR.NOT_FOUND(metadata, keyParam)
             );
         });
     });
@@ -100,7 +100,6 @@ describe('UsersService', () => {
     describe('Create User', () => {
         it('should create and return a new user', () => {
             const ret = service.create(mockData[0]);
-
             expect(ret).toMatchObject(mockData[0]);
         });
 
@@ -126,11 +125,7 @@ describe('UsersService', () => {
             service.create(mockData[0]);
 
             expect(() => service.create(mockData[0])).toThrow(
-                writeError(
-                    metadata,
-                    ERROR_MESSAGES.EXISTS,
-                    mockData[0][metadata.keyName]
-                )
+                ERROR.EXISTS(metadata, mockData[0][metadata.keyName])
             );
         });
     });
@@ -154,7 +149,7 @@ describe('UsersService', () => {
             const keyParam = 'unknownuser';
 
             expect(() => service.update(keyParam, updateData)).toThrow(
-                writeError(metadata, ERROR_MESSAGES.NOT_FOUND, keyParam)
+                ERROR.NOT_FOUND(metadata, keyParam)
             );
         });
     });
@@ -165,7 +160,7 @@ describe('UsersService', () => {
             service.delete(retKeyName);
 
             expect(() => service.findOne(retKeyName)).toThrow(
-                writeError(metadata, ERROR_MESSAGES.NOT_FOUND, retKeyName)
+                ERROR.NOT_FOUND(metadata, retKeyName)
             );
         });
 
@@ -173,7 +168,7 @@ describe('UsersService', () => {
             const keyParam = 'unknownuser';
 
             expect(() => service.delete(keyParam)).toThrow(
-                writeError(metadata, ERROR_MESSAGES.NOT_FOUND, keyParam)
+                ERROR.NOT_FOUND(metadata, keyParam)
             );
         });
     });

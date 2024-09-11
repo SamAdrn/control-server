@@ -19,12 +19,14 @@ import { sortObjects } from 'src/shared/utils/sort.util';
 
 @Injectable()
 export class UsersService {
-    private metadata: Metadata;
+    private metadata: Metadata<User>;
+    private keyName: keyof User;
 
     constructor(
         @InjectRepository(User) private dataRepository: Repository<User>
     ) {
         this.metadata = UserMetadata;
+        this.keyName = this.metadata.keyName;
     }
 
     async findAll(filter?: Partial<ViewUserDto>): Promise<ViewUserDto[]> {
@@ -37,7 +39,7 @@ export class UsersService {
     }
 
     async findOne(keyValue: string): Promise<ViewUserDto> {
-        const query = { [this.metadata.keyName]: keyValue };
+        const query = { [this.keyName]: keyValue };
         const item = await this.dataRepository.findOneBy(query);
 
         if (!item) {
@@ -50,13 +52,13 @@ export class UsersService {
 
     async create(createItem: CreateUserDto): Promise<ViewUserDto> {
         const query = {
-            [this.metadata.keyName]: createItem[this.metadata.keyName],
+            [this.keyName]: createItem[this.keyName],
         };
         const existingItem = await this.dataRepository.findOneBy(query);
 
         if (existingItem) {
             throw new ConflictException(
-                ERROR.EXISTS(this.metadata, createItem[this.metadata.keyName])
+                ERROR.EXISTS(this.metadata, createItem[this.keyName])
             );
         }
 
@@ -68,7 +70,7 @@ export class UsersService {
         keyValue: string,
         updateItem: UpdateUserDto
     ): Promise<ViewUserDto> {
-        const query = { [this.metadata.keyName]: keyValue };
+        const query = { [this.keyName]: keyValue };
         const item = await this.dataRepository.findOneBy(query);
 
         if (!item) {
@@ -82,7 +84,7 @@ export class UsersService {
     }
 
     async delete(keyValue: string): Promise<void> {
-        const query = { [this.metadata.keyName]: keyValue };
+        const query = { [this.keyName]: keyValue };
         const item = await this.dataRepository.findOneBy(query);
 
         if (!item) {

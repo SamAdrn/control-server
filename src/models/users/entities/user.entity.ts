@@ -6,6 +6,8 @@ import {
     IsNotEmpty,
     IsOptional,
     IsUUID,
+    Length,
+    Matches,
 } from 'class-validator';
 import {
     Column,
@@ -84,18 +86,25 @@ export class BaseUserDto {
     updatedDate: string;
 
     @IsNotEmpty()
-    @IsAlpha()
+    @IsAlpha('en-US', { message: 'First name must contain only letters' })
+    @Length(1, 100)
     firstName: string;
 
     @IsNotEmpty()
-    @IsAlpha()
+    @IsAlpha('en-US', { message: 'Last name must contain only letters' })
+    @Length(1, 100)
     lastName: string;
 
     @IsNotEmpty()
+    @Matches(/^[a-zA-Z0-9._-]+$/, {
+        message: 'UPN must be alphanumeric and can contain . _ -',
+    })
+    @Length(1, 60)
     upn: string;
 
     @IsOptional()
     @IsEmail()
+    @Length(1, 100)
     email?: string;
 }
 

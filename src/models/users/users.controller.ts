@@ -21,30 +21,32 @@ export class UsersController {
     constructor(private readonly dataService: UsersService) {}
 
     @Get()
-    findAll(@Query() query?: Partial<ViewUserDto>): ViewUserDto[] {
-        return this.dataService.findAll(query);
+    async findAll(
+        @Query() query?: Partial<ViewUserDto>
+    ): Promise<ViewUserDto[]> {
+        return await this.dataService.findAll(query);
     }
 
     @Get(':upn')
-    findOne(@Param('upn') keyValue: string): ViewUserDto {
-        return this.dataService.findOne(keyValue);
+    async findOne(@Param('upn') keyValue: string): Promise<ViewUserDto> {
+        return await this.dataService.findOne(keyValue);
     }
 
     @Post()
-    create(@Body() createItem: CreateUserDto): ViewUserDto {
-        return this.dataService.create(createItem);
+    async create(@Body() createItem: CreateUserDto): Promise<ViewUserDto> {
+        return await this.dataService.create(createItem);
     }
 
     @Put(':upn')
-    update(
+    async update(
         @Param('upn') keyValue: string,
         @Body() updateItem: UpdateUserDto
-    ): ViewUserDto {
-        return this.dataService.update(keyValue, updateItem);
+    ): Promise<ViewUserDto> {
+        return await this.dataService.update(keyValue, updateItem);
     }
 
     @Delete(':upn')
-    delete(@Param('upn') keyValue: string): void {
-        return this.dataService.delete(keyValue);
+    async delete(@Param('upn') keyValue: string): Promise<void> {
+        return await this.dataService.delete(keyValue);
     }
 }

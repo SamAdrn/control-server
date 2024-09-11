@@ -103,7 +103,7 @@ export class BaseUserDto {
     upn: string;
 
     @IsOptional()
-    @IsEmail()
+    @IsEmail({}, { message: 'Email must be in email format' })
     @Length(1, 100)
     email?: string;
 }

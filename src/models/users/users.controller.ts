@@ -22,7 +22,7 @@ export class UsersController {
 
     @Get()
     async findAll(
-        @Query() query?: Partial<ViewUserDto>
+        @Query() query?: Record<string, any>
     ): Promise<ViewUserDto[]> {
         return await this.dataService.findAll(query);
     }

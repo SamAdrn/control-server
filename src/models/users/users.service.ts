@@ -16,6 +16,7 @@ import { UserMetadata } from '../../shared/metadata/user.metadata';
 import { Metadata } from 'src/shared/interfaces/metadata.interface';
 import { ERROR } from 'src/shared/utils/error.util';
 import { sortObjects } from 'src/shared/utils/sort.util';
+import { parseQueryParams } from 'src/shared/utils/parse-query-params.util';
 
 @Injectable()
 export class UsersService {
@@ -29,8 +30,8 @@ export class UsersService {
         this.keyName = this.metadata.keyName;
     }
 
-    async findAll(filter?: Partial<ViewUserDto>): Promise<ViewUserDto[]> {
-        const query = filter ? { where: filter } : {};
+    async findAll(queryParams?: Record<string, any>): Promise<ViewUserDto[]> {
+        const query = parseQueryParams<User>(queryParams);
         const items = sortObjects(
             await this.dataRepository.find(query),
             this.metadata.sortBy

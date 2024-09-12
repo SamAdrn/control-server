@@ -72,6 +72,9 @@ export class User {
     email?: string;
 }
 
+/**
+ * The Data Transfer Object for a User
+ */
 export class BaseUserDto {
     @IsNotEmpty()
     @IsUUID()

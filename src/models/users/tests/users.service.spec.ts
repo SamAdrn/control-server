@@ -16,10 +16,11 @@ describe('UsersService', () => {
     let module: TestingModule;
 
     const metadata = UserMetadata;
-    const mockData: ViewUserDto[] = sortObjects(
+    const mockDataList: ViewUserDto[] = sortObjects(
         USER_MOCK_DATA,
         metadata.sortBy
     );
+    const mockDataObj: ViewUserDto = mockDataList[0];
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
@@ -75,20 +76,20 @@ describe('UsersService', () => {
 
     describe('Create User', () => {
         it('should create and return a new user', async () => {
-            const requestBody = mockData[0];
+            const requestBody = mockDataObj;
             const newItem = await service.create(requestBody);
             expect(newItem).toMatchObject(requestBody);
         });
 
         it('should create multiple users one-by-one', async () => {
-            for (const requestBody of mockData) {
+            for (const requestBody of mockDataList) {
                 const newItem = await service.create(requestBody);
                 expect(newItem).toMatchObject(requestBody);
             }
         });
 
         it('should correctly set createdDate and updatedDate when a new user is created', async () => {
-            const newItem = await service.create(mockData[0]);
+            const newItem = await service.create(mockDataObj);
 
             // expect(newItem.createdDate).toBeDefined();
             // expect(newItem.updatedDate).toBeDefined();
@@ -103,7 +104,7 @@ describe('UsersService', () => {
         });
 
         it('should throw an error when creating a user with a key value that already exists', async () => {
-            const requestBody = mockData[0];
+            const requestBody = mockDataObj;
             await service.create(requestBody);
 
             // Repeat CREATE -- should throw error
@@ -116,19 +117,19 @@ describe('UsersService', () => {
     describe('Find Users', () => {
         beforeEach(async () => {
             await Promise.all(
-                mockData.map((requestBody) => service.create(requestBody))
+                mockDataList.map((requestBody) => service.create(requestBody))
             );
         });
 
         it('should return all users', async () => {
             const items = await service.findAll();
-            expect(items.length).toBe(mockData.length);
-            expect(items).toMatchObject(mockData);
+            expect(items.length).toBe(mockDataList.length);
+            expect(items).toMatchObject(mockDataList);
         });
 
         it('should find a user by UPN', async () => {
-            const item = await service.findOne(mockData[0].upn);
-            expect(item).toMatchObject(mockData[0]);
+            const item = await service.findOne(mockDataObj[metadata.keyName]);
+            expect(item).toMatchObject(mockDataObj);
         });
 
         it('should throw an error when finding a non-existent user', async () => {
@@ -137,12 +138,12 @@ describe('UsersService', () => {
             );
         });
 
-        it('should return users matching a filter', async () => {
-            const filter = { lastName: USER_MOCK_DATA[0].lastName };
+        it('should return users matching a equality filter', async () => {
+            const filter = { lastName: mockDataObj.lastName };
             const items = await service.findAll(filter);
 
             expect(items.length).toBe(1);
-            expect(items[0]).toMatchObject(USER_MOCK_DATA[0]);
+            expect(items[0]).toMatchObject(mockDataObj);
         });
 
         it('should return an empty array if no users match the filter criteria', async () => {
@@ -155,54 +156,50 @@ describe('UsersService', () => {
 
     describe('Update User', () => {
         beforeEach(async () => {
-            await Promise.all(
-                mockData.map((requestBody) => service.create(requestBody))
-            );
+            await service.create(mockDataObj);
         });
 
         it('should update and return the updated user', async () => {
+            const updateKey = mockDataObj[metadata.keyName];
             const updateData = { firstName: 'Updated Name' };
 
-            const item = await service.update(
-                mockData[0][metadata.keyName],
-                updateData
-            );
+            const item = await service.update(updateKey, updateData);
 
             expect(item.firstName).toBe(updateData.firstName);
-            expect(item.lastName).toBe(mockData[0].lastName); // unchanged
+            expect(item.lastName).toBe(mockDataObj.lastName); // unchanged
         });
 
         it('should throw an error when trying to update a non-existent user', async () => {
+            const updateKey = 'unknownuser';
             const updateData = { firstName: 'Updated Name' };
-            const keyParam = 'unknownuser';
 
             await expect(() =>
-                service.update(keyParam, updateData)
-            ).rejects.toThrow(ERROR.NOT_FOUND(metadata, keyParam));
+                service.update(updateKey, updateData)
+            ).rejects.toThrow(ERROR.NOT_FOUND(metadata, updateKey));
         });
     });
 
     describe('Delete User', () => {
         beforeEach(async () => {
             await Promise.all(
-                mockData.map((requestBody) => service.create(requestBody))
+                mockDataList.map((requestBody) => service.create(requestBody))
             );
         });
 
         it('should delete a user and return void', async () => {
-            const keyToDelete = mockData[0][metadata.keyName];
-            await service.delete(keyToDelete);
+            const deleteKey = mockDataObj[metadata.keyName];
+            await service.delete(deleteKey);
 
-            await expect(() => service.findOne(keyToDelete)).rejects.toThrow(
-                ERROR.NOT_FOUND(metadata, keyToDelete)
+            await expect(() => service.findOne(deleteKey)).rejects.toThrow(
+                ERROR.NOT_FOUND(metadata, deleteKey)
             );
         });
 
         it('should throw an error when trying to delete a non-existent user', async () => {
-            const keyToDelete = 'unknownuser';
+            const deleteKey = 'unknownuser';
 
-            await expect(() => service.delete(keyToDelete)).rejects.toThrow(
-                ERROR.NOT_FOUND(metadata, keyToDelete)
+            await expect(() => service.delete(deleteKey)).rejects.toThrow(
+                ERROR.NOT_FOUND(metadata, deleteKey)
             );
         });
     });

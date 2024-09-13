@@ -1,12 +1,12 @@
 /**
  * Represents the metadata information an object needs
  */
-export interface Metadata<T> {
+export interface Metadata {
     name: string;
     namePlural: string;
     label: string;
     labelPlural: string;
     description: string;
-    keyName: keyof T;
-    sortBy: Array<keyof T>;
+    keyName: string;
+    sortBy: string[];
 }

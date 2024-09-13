@@ -20,8 +20,8 @@ import { parseQueryParams } from 'src/shared/utils/parse-query-params.util';
 
 @Injectable()
 export class UsersService {
-    private metadata: Metadata<User>;
-    private keyName: keyof User;
+    private metadata: Metadata;
+    private keyName: string;
 
     constructor(
         @InjectRepository(User) private dataRepository: Repository<User>

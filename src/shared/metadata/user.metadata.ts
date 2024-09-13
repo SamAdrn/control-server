@@ -1,7 +1,7 @@
 import { User } from 'src/models/users/entities/user.entity';
 import { Metadata } from 'src/shared/interfaces/metadata.interface';
 
-export const UserMetadata: Metadata<User> = {
+export const UserMetadata: Metadata = {
     name: 'user',
     namePlural: 'users',
     label: 'User',

@@ -1,12 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Repository } from 'typeorm';
 
 import { USER_MOCK_DATA } from './users-mock.data';
 import { UsersService } from '../users.service';
 import { User, ViewUserDto } from '../entities/user.entity';
 import { UserMetadata } from '../../../shared/metadata/user.metadata';
-import { sortObjects } from 'src/shared/utils/sort.util';
+import { AppModule } from 'src/app.module';
 import { ERROR } from 'src/shared/utils/error.util';
-import { Repository } from 'typeorm';
+import { sortObjects } from 'src/shared/utils/sort.util';
+
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
@@ -24,29 +26,7 @@ describe('UsersService', () => {
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
-            imports: [
-                ConfigModule.forRoot({
-                    isGlobal: true,
-                    envFilePath: `src/environments/.env.test.local`,
-                }),
-                TypeOrmModule.forRootAsync({
-                    imports: [ConfigModule],
-                    useFactory: (configService: ConfigService) => ({
-                        type: 'postgres',
-                        host: configService.get<string>('DATABASE_HOST'),
-                        port: configService.get<number>('DATABASE_PORT'),
-                        username: configService.get<string>('DATABASE_USER'),
-                        password:
-                            configService.get<string>('DATABASE_PASSWORD'),
-                        database: configService.get<string>('DATABASE_NAME'),
-                        autoLoadEntities: true,
-                        synchronize: true,
-                    }),
-                    inject: [ConfigService],
-                }),
-                TypeOrmModule.forFeature([User]),
-            ],
-            providers: [UsersService],
+            imports: [AppModule],
         }).compile();
 
         service = module.get<UsersService>(UsersService);
@@ -138,7 +118,7 @@ describe('UsersService', () => {
             );
         });
 
-        it('should return users matching a equality filter', async () => {
+        it('should return users matching an equality filter', async () => {
             const filter = { lastName: mockDataObj.lastName };
             const items = await service.findAll(filter);
 

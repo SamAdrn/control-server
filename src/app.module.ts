@@ -10,7 +10,7 @@ import { UsersModule } from './models/users/users.module';
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
-            envFilePath: `src/environments/.env`,
+            envFilePath: `src/environments/.env.${process.env.NODE_ENV || 'development'}.local`,
         }),
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
@@ -34,6 +34,11 @@ import { UsersModule } from './models/users/users.module';
 export class AppModule {
     constructor(private readonly configService: ConfigService) {
         // Log environment variables to check if they're loaded correctly
+        console.log(
+            'Environment File:',
+            `src/environments/.env.${process.env.NODE_ENV || 'development'}.local`
+        );
+
         console.log('Database Config:', {
             host: this.configService.get<string>('DATABASE_HOST'),
             port: this.configService.get<number>('DATABASE_PORT'),

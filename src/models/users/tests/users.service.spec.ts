@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 
 import { USER_MOCK_DATA } from './users-mock.data';
 import { UsersService } from '../users.service';
-import { User, ViewUserDto } from '../entities/user.entity';
+import { CreateUserDto, User, ViewUserDto } from '../entities/user.entity';
 import { UserMetadata } from '../../../shared/metadata/user.metadata';
 import { AppModule } from 'src/app.module';
 import { ERROR } from 'src/shared/utils/error.util';
@@ -18,11 +18,8 @@ describe('UsersService', () => {
     let module: TestingModule;
 
     const metadata = UserMetadata;
-    const mockDataList: ViewUserDto[] = sortObjects(
-        USER_MOCK_DATA,
-        metadata.sortBy
-    );
-    const mockDataObj: ViewUserDto = mockDataList[0];
+    const mockDataList: CreateUserDto[] = USER_MOCK_DATA;
+    const mockDataObj: CreateUserDto = mockDataList[0];
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
@@ -104,7 +101,9 @@ describe('UsersService', () => {
         it('should return all users', async () => {
             const items = await service.findAll();
             expect(items.length).toBe(mockDataList.length);
-            expect(items).toMatchObject(mockDataList);
+            expect(items).toMatchObject(
+                sortObjects(mockDataList, metadata.sortBy)
+            );
         });
 
         it('should find a user by UPN', async () => {

@@ -32,10 +32,14 @@ export class UsersService {
 
     async findAll(queryParams?: Record<string, any>): Promise<ViewUserDto[]> {
         const query = parseQueryParams<User>(queryParams);
-        const items = sortObjects(
-            await this.dataRepository.find(query),
-            this.metadata.sortBy
-        );
+
+        // If no order is specified, then do default sorting order
+        if (!query.order) {
+            query.order = {};
+            this.metadata.sortBy.map((key) => (query.order[key] = 'ASC'));
+        }
+
+        const items = await this.dataRepository.find(query);
         return items;
     }
 
